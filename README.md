@@ -1,2 +1,2 @@
 # bdeseries
-A R-language client for Banco de España series.
+Búsqueda y descarga de series del Banco de España

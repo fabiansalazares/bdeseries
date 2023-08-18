@@ -63,7 +63,37 @@ download_series_full <- function() {
                     titulo,
                     fuente,
                     notas,
-                    db)
+                    db) |>
+      dplyr::mutate(mes = dplyr::case_when(stringr::str_length(fecha_primera_observacion) == 4 ~ NA,
+                                           TRUE ~  stringr::str_sub(fecha_ultima_observacion,1,3))) |>
+      dplyr::mutate(fecha_ultima_observacion = lubridate::dmy(dplyr::case_when(fecha_ultima_observacion %in% c("...", "") | is.na(fecha_ultima_observacion) ~ NA,
+                                                                stringr::str_length(fecha_ultima_observacion) == 4 ~ paste0("01 enero ", fecha_ultima_observacion),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "ENE" ~  paste0("01 enero ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "FEB" ~  paste0("01 febrero ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "MAR" ~  paste0("01 marzo ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "ABR" ~  paste0("01 abril ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "MAY" ~  paste0("01 mayo ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "JUN" ~  paste0("01 junio ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "JUL" ~  paste0("01 julio ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "AGO" ~  paste0("01 agosto ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "SEP" ~  paste0("01 septiembre ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "OCT" ~  paste0("01 octubre ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "NOV" ~  paste0("01 noviembre ", stringr::str_sub(fecha_ultima_observacion, 5,8)),
+                                                         stringr::str_sub(fecha_ultima_observacion,1,3) == "DIC" ~  paste0("01 diciembre ", stringr::str_sub(fecha_ultima_observacion, 5,8)))),
+                    fecha_primera_observacion = lubridate::dmy(dplyr::case_when(fecha_primera_observacion %in% c("...", "") | is.na(fecha_primera_observacion) ~ NA,
+                                                                               stringr::str_length(fecha_primera_observacion) == 4 ~ paste0("01 enero ", fecha_primera_observacion),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "ENE" ~  paste0("01 enero ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "FEB" ~  paste0("01 febrero ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "MAR" ~  paste0("01 marzo ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "ABR" ~  paste0("01 abril ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "MAY" ~  paste0("01 mayo ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "JUN" ~  paste0("01 junio ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "JUL" ~  paste0("01 julio ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "AGO" ~  paste0("01 agosto ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "SEP" ~  paste0("01 septiembre ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "OCT" ~  paste0("01 octubre ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "NOV" ~  paste0("01 noviembre ", stringr::str_sub(fecha_primera_observacion, 5,8)),
+                                                                               stringr::str_sub(fecha_primera_observacion,1,3) == "DIC" ~  paste0("01 diciembre ", stringr::str_sub(fecha_primera_observacion, 5,8)))))
 
     message(datos_path)
 

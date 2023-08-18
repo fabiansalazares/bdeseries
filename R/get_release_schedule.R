@@ -21,7 +21,9 @@ get_release_schedule <- function(search_str) {
                   descripcion = DESCRIPTION,
                   alt_text = `X-ALT-DESC;FMTTYPE=text/html`,
                   uid = UID) |>
-    dplyr::select(-`DTEND;TZID=Europe/Madrid`, -alt_text)
+    dplyr::select(-`DTEND;TZID=Europe/Madrid`, -alt_text) |>
+    dplyr::mutate(fecha_evento = lubridate::ymd(fecha_evento),
+                  fecha = lubridate::ymd(fecha))
 
-
+  return(events_df)
 }

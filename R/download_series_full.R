@@ -64,8 +64,6 @@ download_series_full <- function() {
                     fuente,
                     notas,
                     db) |>
-      dplyr::mutate(mes = dplyr::case_when(stringr::str_length(fecha_primera_observacion) == 4 ~ NA,
-                                           TRUE ~  stringr::str_sub(fecha_ultima_observacion,1,3))) |>
       dplyr::mutate(fecha_ultima_observacion = lubridate::dmy(dplyr::case_when(fecha_ultima_observacion %in% c("...", "") | is.na(fecha_ultima_observacion) ~ NA,
                                                                 stringr::str_length(fecha_ultima_observacion) == 4 ~ paste0("01 enero ", fecha_ultima_observacion),
                                                          stringr::str_sub(fecha_ultima_observacion,1,3) == "ENE" ~  paste0("01 enero ", stringr::str_sub(fecha_ultima_observacion, 5,8)),

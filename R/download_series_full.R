@@ -7,13 +7,24 @@
 #' @examples
 #' download_series_full()
 
-download_series_full <- function() {
-  datos_path <- gsub("/",
-                     "\\\\", tools::R_user_dir("bdeseries", which = "data"))
+download_series_full <- function(forcedownload=FALSE) {
 
-  if (!dir.exists(datos_path)){
+
+  datos_path <- gsub("/",
+                     "\\\\",
+                     tools::R_user_dir("bdeseries", which = "data"))
+
+  if (!dir.exists(paste0(datos_path, "catalogo.feather"))){
     dir.create(datos_path,
                recursive = TRUE)
+
+  }
+
+  message("Date of last update: ",as.Date(file.info(paste0(datos_path, "\\catalogo.feather"))$mtime) )
+
+  if (as.Date(file.info(paste0(datos_path, "\\catalogo.feather"))$mtime) == Sys.Date() & !forcedownload) {
+    message("BdE data have already been downloaded today.")
+    return()
 
   }
 

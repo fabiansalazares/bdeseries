@@ -54,6 +54,18 @@ get_series <- function(codes) {
                      dplyr::filter(nombre == code) |>
                      dplyr::distinct(descripcion))$descripcion
 
+
+  tryCatch({},
+           error=function(cond) {
+             message(paste0("Serie ", code, " could not be retrieved."))
+             message("Error: ", cond)
+             return(NULL)
+           },
+           warning=function(cond) {
+             message(paste0("Serie ", code, " returned the following warning message: ", cond))
+
+           },
+           finall={})
   serie <- csv_datos |>
     tail(nrow(csv_datos) - 6) |>
     dplyr::rename(fecha = NOMBRE.DE.LA.SERIE) |>

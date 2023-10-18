@@ -22,9 +22,11 @@ download_series_full <- function(forcedownload=FALSE) {
 
   message("Date of last update: ",as.Date(file.info(paste0(datos_path, "\\catalogo.feather"))$mtime) )
 
-  if (as.Date(file.info(paste0(datos_path, "\\catalogo.feather"))$mtime) == Sys.Date() & !forcedownload) {
-    message("BdE data have already been downloaded today.")
-    return()
+  if (!is.na(as.Date(file.info(paste0(datos_path, "\\catalogo.feather"))$mtime))) {
+    if (as.Date(file.info(paste0(datos_path, "\\catalogo.feather"))$mtime) == Sys.Date() & !forcedownload) {
+      message("BdE data have already been downloaded today.")
+      return()
+    }
 
   }
 

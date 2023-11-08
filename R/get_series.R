@@ -10,25 +10,21 @@
 
 get_series <- function(codes) {
 
+
   datos_path <- gsub("/",
                      "\\\\", tools::R_user_dir("bdeseries", which = "data"))
 
-  # if(!file.exists(paste0(datos_path, "\\catalogo_be.feather"))) {
   if(!file.exists(paste0(datos_path, "\\catalogo.feather"))) {
-
     message("The series and the series' catalog were not found.")
     message("Downloading...")
 
     download_series_full()
   }
 
-
-  # series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo_be.feather"))
   series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo.feather"))
   series <- dplyr::tibble()
 
   for (code in codes) {
-
   csv_fichero_path <-  paste0(datos_path,
                               "\\",
                              tolower((series_catalog |>
@@ -50,17 +46,23 @@ get_series <- function(codes) {
   csv_datos <- read.csv(tail(csv_fichero_path,1))
   # csv_datos <- readr::read_csv(csv_fichero_path, locale=readr::locale(encoding="latin1"))
 
+  # code <- stringr::str_replace(codes,"#",".")
+  # code <- stringr::str_replace(codes,"#",".")
+
+
   nombre <- (series_catalog |>
                      dplyr::filter(nombre == code) |>
                      dplyr::distinct(descripcion))$descripcion
 
 
   tryCatch({
+
+
     serie <- csv_datos |>
       tail(nrow(csv_datos) - 6) |>
       dplyr::rename(fecha = NOMBRE.DE.LA.SERIE) |>
-      dplyr::select(fecha, one_of(code)) |>
-      dplyr::rename(valores = one_of(code)) |>
+      dplyr::select(fecha, one_of(stringr::str_replace(codes,"#","."))) |>
+      dplyr::rename(valores = one_of(stringr::str_replace(codes,"#","."))) |>
       dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS" & valores != "_") |>
       # mutate(fecha_raw = fecha) %>%
       #tail(100) %>%
@@ -77,7 +79,7 @@ get_series <- function(codes) {
       dplyr::mutate(codigo = code,
                     fichero = (series_catalog |>
                                  dplyr::filter(nombre == code) |>
-                                 dplyr::distinct(decimales))$decimales,
+                                 dplyr::distinct(fichero))$fichero,
                     decimales = (series_catalog |>
                                    dplyr::filter(nombre == code) |>
                                    dplyr::distinct(decimales))$decimales,

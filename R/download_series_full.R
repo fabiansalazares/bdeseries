@@ -32,7 +32,11 @@ download_series_full <- function(forcedownload=FALSE) {
 
   catalogo <- dplyr::tibble()
 
-  for (bde_data_set in c("be", "si")) {
+  for (bde_data_set in c("be", # boletín estadístico
+                         "si", # síntesis de indicadores
+                         "cf", # cuentas financieras - hay errores en el catálogo: al menos en una serie (DMZ10S80ZH0_TPRPIB.Q), el fichero csv al que apunta el catalogo de series no existe.
+                         "ti", # tipos de interés
+                         "pb")) { # encuesta de préstamos bancarios
     # Downloaded from: https://www.bde.es/webbe/es/estadisticas/recursos/descargas-completas.html
     # be - boletín estadístico
     # si - síntesis de indicadores

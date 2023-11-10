@@ -55,7 +55,7 @@ get_series <- function(codes) {
 
     # loop sobre cada uno de los ficheros csvs devueltos para un código determinado
     for(csv_fichero_path in csv_ficheros_path) {
-      # message("csv_fichero_path: ", csv_fichero_path)
+      message("csv_fichero_path: ", csv_fichero_path)
 
 
       tryCatch({
@@ -73,11 +73,18 @@ get_series <- function(codes) {
           #tail(100) %>%
           dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
                                                as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
-                                               as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
-                                                                                                   stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
-                                                                                                                                   ". ",
-                                                                                                                                   stringr::str_sub(fecha,5,8)))),
-                                                                                            "%d %b %Y"))))) |>
+                                               if_else(stringr::str_length(fecha) == 8,
+                                                 as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
+                                                                                                     stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
+                                                                                                                                     ". ",
+                                                                                                                                     stringr::str_sub(fecha,5,8)))),
+                                                                                              "%d %b %Y"))),
+                                                 as.Date(paste0(stringr::str_sub(fecha, 1,2),
+                                                                " ",
+                                                                stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 4,6))),
+                                                                ". ",
+                                                                stringr::str_sub(fecha,8,11)), format="%d %b %Y")
+                                               ))) |>
           dplyr::mutate(nombres = nombre) |>
           dplyr::mutate(valores = as.double(valores)) |>
           dplyr::as_tibble() |>

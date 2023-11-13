@@ -22,9 +22,16 @@ get_series <- function(codes) {
   }
 
   series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo.feather"))
-  series <- dplyr::tibble()
+
+  series_final_df <- dplyr::tibble()
+
 
   for (code in codes) {
+
+    series <- dplyr::tibble()
+
+    message("Code: ", code)
+
     csv_ficheros_path <-  paste0(datos_path,
                                 "\\",
                                tolower((series_catalog |>
@@ -66,14 +73,14 @@ get_series <- function(codes) {
         serie <- csv_datos |>
           tail(nrow(csv_datos) - 6) |>
           dplyr::rename(fecha = NOMBRE.DE.LA.SERIE) |>
-          dplyr::select(fecha, one_of(stringr::str_replace(codes,"#",".")  %>% stringr::str_replace("\\$", ".") )) |>
-          dplyr::rename(valores = one_of(stringr::str_replace(codes,"#",".")  %>% stringr::str_replace("\\$", "."))) |>
+          dplyr::select(fecha, one_of(stringr::str_replace(code   ,"#",".") |> stringr::str_replace("\\$", ".") )) |>
+          dplyr::rename(valores = one_of(stringr::str_replace(code,"#",".") |> stringr::str_replace("\\$", "."))) |>
           dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS" & valores != "_") |>
           # mutate(fecha_raw = fecha) %>%
           #tail(100) %>%
           dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
                                                as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
-                                               if_else(stringr::str_length(fecha) == 8,
+                                               dplyr::if_else(stringr::str_length(fecha) == 8,
                                                  as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
                                                                                                      stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
                                                                                                                                      ". ",
@@ -122,35 +129,36 @@ get_series <- function(codes) {
                                     dplyr::distinct(titulo))$titulo,
                         fuente = (series_catalog |>
                                     dplyr::filter(nombre == code) |>
-                                    dplyr::distinct(fuente))$fuente,
-          )
+                                    dplyr::distinct(fuente))$fuente,)
         },
-               error=function(cond) {
-                 message(paste0("Serie ", code, " could not be retrieved."))
-                 message("Error: ", cond)
-                 next
-               },
-               warning=function(cond) {
-                 message(paste0("Serie ", code, " returned the following warning message: ", cond))
+          error=function(cond) {
+           message(paste0("Serie ", code, " could not be retrieved."))
+           message("Error: ", cond)
+           next
+          },
+          warning=function(cond) {
+           message(paste0("Serie ", code, " returned the following warning message: ", cond))
 
-               },
-               final={})
+          },
+          final={})
 
-        series <- dplyr::bind_rows(series, serie)
+      series <- dplyr::bind_rows(series, serie)
+    }
 
-      }
+    max_fecha_series <- max(series$fecha)
+
+    series <- series |>
+      dplyr::group_by(fichero) |>
+      dplyr::filter(!max(fecha) < max_fecha_series) |>
+      dplyr::ungroup() |>
+      dplyr::filter(fichero == dplyr::first(fichero))
+
+    series_final_df <- series_final_df |>
+      dplyr::bind_rows(series_final_df, series)
 
   }
 
-  max_fecha_series <- max(series$fecha)
+  series_final_df <- series_final_df |> dplyr::arrange(fecha)
 
-  series <- series |>
-    dplyr::group_by(fichero) |>
-    dplyr::filter(!max(fecha) < max_fecha_series) |>
-    dplyr::ungroup() |>
-    filter(fichero == first(fichero))
-
-  series <- series |> dplyr::arrange(fecha)
-
-  return(series)
+  return(series_final_df)
 }

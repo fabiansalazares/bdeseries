@@ -28,137 +28,141 @@ get_series <- function(codes) {
 
   for (code in codes) {
 
-    series <- dplyr::tibble()
+          series <- dplyr::tibble()
 
-    message("Code: ", code)
+          message("Code: ", code)
 
-    csv_ficheros_path <-  paste0(datos_path,
-                                "\\",
-                               tolower((series_catalog |>
-                                          dplyr::filter(nombre == code) |>
-                                          dplyr::distinct(fichero))$fichero))
+          csv_ficheros_path <-  paste0(datos_path,
+                                      "\\",
+                                     tolower((series_catalog |>
+                                                dplyr::filter(nombre == code) |>
+                                                dplyr::distinct(fichero))$fichero))
 
-    fecha_primera_observacion <- series_catalog |>
-      dplyr::filter(nombre == code) |>
-      dplyr::distinct(fecha_primera_observacion)
+          fecha_primera_observacion <- series_catalog |>
+            dplyr::filter(nombre == code) |>
+            dplyr::distinct(fecha_primera_observacion)
 
-    fecha_ultima_observacion <- series_catalog |>
-      dplyr::filter(nombre == code) |>
-      dplyr::distinct(fecha_ultima_observacion)
+          fecha_ultima_observacion <- series_catalog |>
+            dplyr::filter(nombre == code) |>
+            dplyr::distinct(fecha_ultima_observacion)
 
-    csv_ficheros_path <- gsub("\\\\",
-                               "/",
-                              csv_ficheros_path)
+          csv_ficheros_path <- gsub("\\\\",
+                                     "/",
+                                    csv_ficheros_path)
 
-    # csv_datos <- read.csv(tail(csv_fichero_path,1))
-    # csv_datos <- readr::read_csv(csv_fichero_path, locale=readr::locale(encoding="latin1"))
+          # csv_datos <- read.csv(tail(csv_fichero_path,1))
+          # csv_datos <- readr::read_csv(csv_fichero_path, locale=readr::locale(encoding="latin1"))
 
-    # code <- stringr::str_replace(codes,"#",".")
+          # code <- stringr::str_replace(codes,"#",".")
 
-    nombre <- (series_catalog |>
-                       dplyr::filter(nombre == code) |>
-                       dplyr::distinct(descripcion))$descripcion
-
-
-    # loop sobre cada uno de los ficheros csvs devueltos para un código determinado
-    for(csv_fichero_path in csv_ficheros_path) {
-      message("csv_fichero_path: ", csv_fichero_path)
+          nombre <- (series_catalog |>
+                             dplyr::filter(nombre == code) |>
+                             dplyr::distinct(descripcion))$descripcion
 
 
-      tryCatch({
+          # loop sobre cada uno de los ficheros csvs devueltos para un código determinado
+          for(csv_fichero_path in csv_ficheros_path) {
+                    message("csv_fichero_path: ", csv_fichero_path)
 
-        csv_datos <- read.csv(csv_fichero_path)
+
+                    tryCatch({
+
+                      csv_datos <- read.csv(csv_fichero_path)
 
 
-        serie <- csv_datos |>
-          tail(nrow(csv_datos) - 6) |>
-          dplyr::rename(fecha = NOMBRE.DE.LA.SERIE) |>
-          dplyr::select(fecha, one_of(stringr::str_replace(code   ,"#",".") |> stringr::str_replace("\\$", ".") )) |>
-          dplyr::rename(valores = one_of(stringr::str_replace(code,"#",".") |> stringr::str_replace("\\$", "."))) |>
-          dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS" & valores != "_") |>
-          # mutate(fecha_raw = fecha) %>%
-          #tail(100) %>%
-          dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
-                                               as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
-                                               dplyr::if_else(stringr::str_length(fecha) == 8,
-                                                 as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
-                                                                                                     stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
-                                                                                                                                     ". ",
-                                                                                                                                     stringr::str_sub(fecha,5,8)))),
-                                                                                              "%d %b %Y"))),
-                                                 as.Date(paste0(stringr::str_sub(fecha, 1,2),
-                                                                " ",
-                                                                stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 4,6))),
-                                                                ". ",
-                                                                stringr::str_sub(fecha,8,11)), format="%d %b %Y")
-                                               ))) |>
-          dplyr::mutate(nombres = nombre) |>
-          dplyr::mutate(valores = as.double(valores)) |>
-          dplyr::as_tibble() |>
-          dplyr::mutate(codigo = code,
-                        fichero = csv_fichero_path,
-                        decimales = (series_catalog |>
-                                       dplyr::filter(nombre == code) |>
-                                       dplyr::distinct(decimales))$decimales,
-                        unidades = (series_catalog |>
-                                      dplyr::filter(nombre == code) |>
-                                      dplyr::distinct(unidades))$unidades,
-                        exponente = (series_catalog |>
-                                       dplyr::filter(nombre == code) |>
-                                       dplyr::distinct(exponente))$exponente,
-                        decimales = (series_catalog |>
-                                       dplyr::filter(nombre == code) |>
-                                       dplyr::distinct(decimales))$decimales,
-                        descripcion_unidades_exponente = (series_catalog |>
-                                                            dplyr::filter(nombre == code) |>
-                                                            dplyr::distinct(descripcion_unidades_exponente))$descripcion_unidades_exponente,
-                        frecuencia = (series_catalog |>
-                                        dplyr::filter(nombre == code) |>
-                                        dplyr::distinct(frecuencia))$frecuencia,
-                        fecha_primera_observacion = (series_catalog |>
-                                                       dplyr::filter(nombre == code) |>
-                                                       dplyr::distinct(fecha_primera_observacion))$fecha_primera_observacion,
-                        fecha_ultima_observacion = (series_catalog |>
+                      serie <- csv_datos |>
+                        tail(nrow(csv_datos) - 6) |>
+                        dplyr::rename(fecha = NOMBRE.DE.LA.SERIE) |>
+                        dplyr::select(fecha, one_of(stringr::str_replace(code   ,"#",".") |> stringr::str_replace("\\$", ".") )) |>
+                        dplyr::rename(valores = one_of(stringr::str_replace(code,"#",".") |> stringr::str_replace("\\$", "."))) |>
+                        dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS" & valores != "_") |>
+                        # mutate(fecha_raw = fecha) %>%
+                        #tail(100) %>%
+                        dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
+                                                             as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
+                                                             dplyr::if_else(stringr::str_length(fecha) == 8,
+                                                               as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
+                                                                                                                   stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
+                                                                                                                                                   ". ",
+                                                                                                                                                   stringr::str_sub(fecha,5,8)))),
+                                                                                                            "%d %b %Y"))),
+                                                               as.Date(paste0(stringr::str_sub(fecha, 1,2),
+                                                                              " ",
+                                                                              stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 4,6))),
+                                                                              ". ",
+                                                                              stringr::str_sub(fecha,8,11)), format="%d %b %Y")
+                                                             ))) |>
+                        dplyr::mutate(nombres = nombre) |>
+                        dplyr::mutate(valores = as.double(valores)) |>
+                        dplyr::as_tibble() |>
+                        dplyr::mutate(codigo = code,
+                                      fichero = csv_fichero_path,
+                                      decimales = (series_catalog |>
+                                                     dplyr::filter(nombre == code) |>
+                                                     dplyr::distinct(decimales))$decimales,
+                                      unidades = (series_catalog |>
+                                                    dplyr::filter(nombre == code) |>
+                                                    dplyr::distinct(unidades))$unidades,
+                                      exponente = (series_catalog |>
+                                                     dplyr::filter(nombre == code) |>
+                                                     dplyr::distinct(exponente))$exponente,
+                                      decimales = (series_catalog |>
+                                                     dplyr::filter(nombre == code) |>
+                                                     dplyr::distinct(decimales))$decimales,
+                                      descripcion_unidades_exponente = (series_catalog |>
+                                                                          dplyr::filter(nombre == code) |>
+                                                                          dplyr::distinct(descripcion_unidades_exponente))$descripcion_unidades_exponente,
+                                      frecuencia = (series_catalog |>
                                                       dplyr::filter(nombre == code) |>
-                                                      dplyr::distinct(fecha_ultima_observacion))$fecha_ultima_observacion,
-                        numero_observaciones = (series_catalog |>
+                                                      dplyr::distinct(frecuencia))$frecuencia,
+                                      fecha_primera_observacion = (series_catalog |>
+                                                                     dplyr::filter(nombre == code) |>
+                                                                     dplyr::distinct(fecha_primera_observacion))$fecha_primera_observacion,
+                                      fecha_ultima_observacion = (series_catalog |>
+                                                                    dplyr::filter(nombre == code) |>
+                                                                    dplyr::distinct(fecha_ultima_observacion))$fecha_ultima_observacion,
+                                      numero_observaciones = (series_catalog |>
+                                                                dplyr::filter(nombre == code) |>
+                                                                dplyr::distinct(numero_observaciones))$numero_observaciones,
+                                      titulo = (series_catalog |>
                                                   dplyr::filter(nombre == code) |>
-                                                  dplyr::distinct(numero_observaciones))$numero_observaciones,
-                        titulo = (series_catalog |>
-                                    dplyr::filter(nombre == code) |>
-                                    dplyr::distinct(titulo))$titulo,
-                        fuente = (series_catalog |>
-                                    dplyr::filter(nombre == code) |>
-                                    dplyr::distinct(fuente))$fuente,)
-        },
-          error=function(cond) {
-           message(paste0("Serie ", code, " could not be retrieved."))
-           message("Error: ", cond)
-           next
-          },
-          warning=function(cond) {
-           message(paste0("Serie ", code, " returned the following warning message: ", cond))
+                                                  dplyr::distinct(titulo))$titulo,
+                                      fuente = (series_catalog |>
+                                                  dplyr::filter(nombre == code) |>
+                                                  dplyr::distinct(fuente))$fuente,)
+                      },
+                        error=function(cond) {
+                         message(paste0("Serie ", code, " could not be retrieved."))
+                         message("Error: ", cond)
+                         next
+                        },
+                        warning=function(cond) {
+                         message(paste0("Serie ", code, " returned the following warning message: ", cond))
 
-          },
-          final={})
+                        },
+                        final={})
 
-      series <- dplyr::bind_rows(series, serie)
-    }
+                    series <- dplyr::bind_rows(series, serie)
+          }
+          # what is the latest date in all the retrieved data?
+          max_fecha_series <- max(series$fecha)
 
-    max_fecha_series <- max(series$fecha)
+          # after grouping by file of origin (fichero), groups of rows whose latest date is not the latest need to be removed
+          series <- series |>
+            dplyr::group_by(fichero) |>
+            dplyr::filter(!max(fecha) < max_fecha_series) |>
+            dplyr::ungroup() |>
+            dplyr::filter(fichero == dplyr::first(fichero)) %>%
+            distinct()
 
-    series <- series |>
-      dplyr::group_by(fichero) |>
-      dplyr::filter(!max(fecha) < max_fecha_series) |>
-      dplyr::ungroup() |>
-      dplyr::filter(fichero == dplyr::first(fichero))
 
-    series_final_df <- series_final_df |>
-      dplyr::bind_rows(series_final_df, series)
+          # binding the retrieved series to the dataframe to be returned
+          series_final_df <- dplyr::bind_rows(series_final_df, series)
 
   }
 
-  series_final_df <- series_final_df |> dplyr::arrange(fecha)
+  series_final_df <- series_final_df |>
+    dplyr::arrange(fecha)
 
   return(series_final_df)
 }

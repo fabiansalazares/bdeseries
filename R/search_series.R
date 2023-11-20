@@ -15,15 +15,15 @@
 
 search_series <- function(search_str,
                           field="descripcion") {
-
-  datos_path <- gsub("/",
-                     "\\\\", tools::R_user_dir("bdeseries", which = "data"))
-
-  # series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo_be.feather"))
-  results <- feather::read_feather(paste0(datos_path, "\\catalogo.feather"))
+#
+#   datos_path <- gsub("/",
+#                      "\\\\", tools::R_user_dir("bdeseries", which = "data"))
+#
+#   # series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo_be.feather"))
+#   results <- feather::read_feather(paste0(datos_path, "\\catalogo.feather"))
 
   for (search_item in search_str) {
-    results <- results |> dplyr::filter(grepl(stringr::str_replace(search_item,
+    results <- catalogo |> dplyr::filter(grepl(stringr::str_replace(search_item,
                                                                    " ",
                                                                    "|"),
                                               eval(as.symbol(field)),

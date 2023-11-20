@@ -9,11 +9,6 @@
 
 get_release_schedule <- function(search_str) {
 
-  datos_path <- gsub("/",
-                     "\\\\", tools::R_user_dir("bdeseries", which = "data"))
-
-  series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo_be.feather"))
-
   events_df <- calendar::ic_read("https://www.bde.es/webbe/es/estadisticas/compartido/calendario/ics/calendario-bde-2023.ics") |>
     dplyr::rename(fecha_evento = `DTSTART;TZID=Europe/Madrid`,
                   fecha = DTSTAMP,

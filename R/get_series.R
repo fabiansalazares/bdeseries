@@ -11,8 +11,8 @@
 get_series <- function(codes) {
 
 
-  # datos_path <- gsub("/",
-  #                    "\\\\", tools::R_user_dir("bdeseries", which = "data"))
+  datos_path <- gsub("/",
+                     "\\\\", tools::R_user_dir("bdeseries", which = "data"))
   #
   # if(!file.exists(paste0(datos_path, "\\catalogo.feather"))) {
   #   message("The series and the series' catalog were not found.")
@@ -38,7 +38,7 @@ get_series <- function(codes) {
 
           csv_ficheros_path <-  paste0(datos_path,
                                       "\\",
-                                     tolower((catalogo |>
+                                     tolower((bdeseries::catalogo |>
                                                 dplyr::filter(nombre == code) |>
                                                 dplyr::distinct(fichero))$fichero))
 
@@ -46,15 +46,15 @@ get_series <- function(codes) {
                                     "/",
                                     csv_ficheros_path)
 
-          fecha_primera_observacion <- catalogo |>
+          fecha_primera_observacion <- bdeseries::catalogo |>
             dplyr::filter(nombre == code) |>
             dplyr::distinct(fecha_primera_observacion)
 
-          fecha_ultima_observacion <- catalogo |>
+          fecha_ultima_observacion <- bdeseries::catalogo |>
             dplyr::filter(nombre == code) |>
             dplyr::distinct(fecha_ultima_observacion)
 
-          nombre <- (catalogo |>
+          nombre <- (bdeseries::catalogo |>
                              dplyr::filter(nombre == code) |>
                              dplyr::distinct(descripcion))$descripcion
 
@@ -120,37 +120,37 @@ get_series <- function(codes) {
                         dplyr::as_tibble() |>
                         dplyr::mutate(codigo = code,
                                       fichero = csv_fichero_path,
-                                      decimales = (catalogo |>
+                                      decimales = (bdeseries::catalogo |>
                                                      dplyr::filter(nombre == code) |>
                                                      dplyr::distinct(decimales))$decimales[[1]],
-                                      unidades = (catalogo |>
+                                      unidades = (bdeseries::catalogo |>
                                                     dplyr::filter(nombre == code) |>
                                                     dplyr::distinct(unidades))$unidades[[1]],
-                                      exponente = (catalogo |>
+                                      exponente = (bdeseries::catalogo |>
                                                      dplyr::filter(nombre == code) |>
                                                      dplyr::distinct(exponente))$exponente[[1]],
-                                      decimales = (catalogo |>
+                                      decimales = (bdeseries::catalogo |>
                                                      dplyr::filter(nombre == code) |>
                                                      dplyr::distinct(decimales))$decimales[[1]],
-                                      descripcion_unidades_exponente = (catalogo |>
+                                      descripcion_unidades_exponente = (bdeseries::catalogo |>
                                                                           dplyr::filter(nombre == code) |>
                                                                           dplyr::distinct(descripcion_unidades_exponente))$descripcion_unidades_exponente[[1]],
-                                      frecuencia = (catalogo |>
+                                      frecuencia = (bdeseries::catalogo |>
                                                       dplyr::filter(nombre == code) |>
                                                       dplyr::distinct(frecuencia))$frecuencia[[1]],
-                                      fecha_primera_observacion = (catalogo |>
+                                      fecha_primera_observacion = (bdeseries::catalogo |>
                                                                      dplyr::filter(nombre == code) |>
                                                                      dplyr::distinct(fecha_primera_observacion))$fecha_primera_observacion[[1]],
-                                      fecha_ultima_observacion = (catalogo |>
+                                      fecha_ultima_observacion = (bdeseries::catalogo |>
                                                                     dplyr::filter(nombre == code) |>
                                                                     dplyr::distinct(fecha_ultima_observacion))$fecha_ultima_observacion[[1]],
-                                      numero_observaciones = max((catalogo |>
+                                      numero_observaciones = max((bdeseries::catalogo |>
                                                                 dplyr::filter(nombre == code) |>
                                                                 dplyr::distinct(numero_observaciones))$numero_observaciones),
-                                      titulo = (catalogo |>
+                                      titulo = (bdeseries::catalogo |>
                                                   dplyr::filter(nombre == code) |>
                                                   dplyr::distinct(titulo))$titulo[[1]],
-                                      fuente = (catalogo |>
+                                      fuente = (bdeseries::catalogo |>
                                                   dplyr::filter(nombre == code) |>
                                                   dplyr::distinct(fuente))$fuente,)
                       },

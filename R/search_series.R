@@ -22,8 +22,10 @@ search_series <- function(search_str,
 #   # series_catalog <- feather::read_feather(paste0(datos_path, "\\catalogo_be.feather"))
 #   results <- feather::read_feather(paste0(datos_path, "\\catalogo.feather"))
 
+  results <- dplyr::tibble(bdeseries::catalogo)
+
   for (search_item in search_str) {
-    results <- catalogo |> dplyr::filter(grepl(stringr::str_replace(search_item,
+    results <- results |> dplyr::filter(grepl(stringr::str_replace(search_item,
                                                                    " ",
                                                                    "|"),
                                               eval(as.symbol(field)),

@@ -45,9 +45,9 @@ update_series <- function() {
     #     - Use Banco de España catalogs. -> forceusebdecatalog = TRUE, forcegeneratecatalog = FALSE
     #     - (BY DEFAULT) Use pre-generated catalog from the series -> forceusebdecatalog = FALSE, forcegeneratecatalog = FALSE
     #     - Generate a new catalog from the series. -> forceusebdecatalog = FALSE, forcegeneratecatalog = TRUE
-    if(forceusebdecatalog & forcegeneratecatalog) {
-      message("Both forceusebdecatalog and forceforcegeneratecatalog are set to TRUE. Aborting.")
-    }
+    # if(forceusebdecatalog & forcegeneratecatalog) {
+    #   message("Both forceusebdecatalog and forceforcegeneratecatalog are set to TRUE. Aborting.")
+    # }
 
     # if (forceusebdecatalog) {
     #   message("Descargando catalogo_", bde_data_set, "...")

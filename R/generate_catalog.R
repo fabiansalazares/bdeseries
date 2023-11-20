@@ -23,7 +23,6 @@ generate_catalog <- function(directory,
                recursive = TRUE)
   }
 
-  ## Cuentas Financieras - building a special catalogue for series available in TE_CF.zip (https://www.bde.es/webbe/es/estadisticas/recursos/descargas-completas.html and https://www.bde.es/webbe/es/estadisticas/compartido/datos/zip/TE_CF.zip)
   catalogo <- dplyr::tibble()
 
   # ### If directory datos/cf does not exist, create it
@@ -52,8 +51,6 @@ generate_catalog <- function(directory,
     # remove duplicated column names from the csv file
     csv_datos <- csv_datos[ , !duplicated(colnames(csv_datos))]
 
-    # csv_datos <- read.csv(paste0(datos_path, "\\cf\\",  csv_cf_datos_path))
-    # csv_datos_rw <- read.csv(paste0(datos_path, "\\cf\\",  csv_cf_datos_path))
 
     csv_datos_procesado <- csv_datos |>
       tail(nrow(csv_datos) - 6) |>
@@ -105,14 +102,35 @@ generate_catalog <- function(directory,
 
 
     for (columna in (names(csv_datos)) |> _[-1]) {
+      descripcion <- stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:")
+      alias <- as.character(csv_datos[[columna]][2])
+
+      # some series' descriptions contain a description of the unit instead of the description itself
+      # in these cases, alias is used to fill up descripcion field.
+      if (!grepl("Miles de Euros", descripcion) &
+          descripcion != "Euros" &
+          descripcion != "Años" &
+          descripcion != "Monedas" &
+          descripcion != "Billetes" &
+          descripcion != "Porcentaje" &
+          !is.na(descripcion)) {
+        descripcion <- descripcion
+      } else {
+        descripcion <- alias
+      }
+
+
       message("serie: ", columna)
 
       serie_cf <- dplyr::tibble(nombre=columna,
                                 numero=as.character(csv_datos[[columna]][1]),
-                                alias=as.character(csv_datos[[columna]][2]),
+                                # alias=as.character(csv_datos[[columna]][2]),
+                                alias=alias,
                                 # fichero=paste0(datos_path, "\\", directory, "\\", csv_cf_datos_path),
                                 fichero=paste0(directory, "\\", csv_cf_datos_path),
-                                descripcion=stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:"),
+                                # descripcion=stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:"),
+                                descripcion=descripcion,
+
                                 tipo="",
                                 unidades=dplyr::if_else(short_csv_format,
                                                  "",
@@ -144,6 +162,9 @@ generate_catalog <- function(directory,
 
   # remove duplicated column names again from the full catalog
   catalogo <- catalogo[ , !duplicated(colnames(catalogo))]
+
+  # remove duplicated descripcion s that point to series with less tha
+
 
 
 

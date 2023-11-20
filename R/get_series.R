@@ -54,9 +54,22 @@ get_series <- function(codes) {
             dplyr::filter(nombre == code) |>
             dplyr::distinct(fecha_ultima_observacion)
 
-          nombre <- (bdeseries::catalogo |>
-                             dplyr::filter(nombre == code) |>
-                             dplyr::distinct(descripcion))$descripcion
+          descripcion <- (bdeseries::catalogo |>
+                            dplyr::filter(nombre == code) |>
+                            dplyr::distinct(descripcion))$descripcion
+
+          alias <- (bdeseries::catalogo |>
+                      dplyr::filter(nombre == code) |>
+                      dplyr::distinct(alias))$alias
+
+          if (!grepl("Miles de Euros", descripcion) & descripcion != "Euros") {
+            nombre <- descripcion
+
+          } else {
+            nombre <- alias
+          }
+
+
 
           # some csvs contain "nombre" fields that are empty. Known to happen -at least- in cuentas financieras files.
           # These empty strings are to be removed if there is an alternative.
@@ -75,11 +88,14 @@ get_series <- function(codes) {
           # loop sobre cada uno de los ficheros csvs devueltos para un código determinado
           # looping over each csv, for each given code
           for(csv_fichero_path in csv_ficheros_path) {
-                    # message("csv_fichero_path: ", csv_fichero_path)
+                    message("csv_fichero_path: ", csv_fichero_path)
 
                     tryCatch({
 
                       csv_datos <- read.csv(csv_fichero_path)
+                      # csv_datos <- readr::read_csv(csv_fichero_path,
+                      #                              readr::locale("es", encoding = "utf8"))
+
 
                       if (!(code |> stringr::str_replace("#", ".") |>
                             stringr::str_replace("\\$", ".") |>

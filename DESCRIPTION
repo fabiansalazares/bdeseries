@@ -1,7 +1,7 @@
 Package: bdeseries
 Type: Package
 Title: Retrieve time series from Banco de España.
-Version: 0.21-20231114
+Version: 0.4-20231120
 Author: Miguel Fabian Salazar
 Maintainer: Miguel Fabian Salazar <miguel@fabiansalazar.es>
 Description: bdeseries retrieves time series from the Banco de España (bde.es) website. 
@@ -10,3 +10,5 @@ Description: bdeseries retrieves time series from the Banco de España (bde.es) 
 License: GPLv3
 Encoding: UTF-8
 LazyData: true
+Depends: 
+    R (>= 2.10)

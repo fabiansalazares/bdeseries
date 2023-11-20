@@ -62,7 +62,7 @@ get_series <- function(codes) {
                       dplyr::filter(nombre == code) |>
                       dplyr::distinct(alias))$alias
 
-          if (!grepl("Miles de Euros", descripcion) & descripcion != "Euros") {
+          if (!grepl("Miles de Euros", descripcion) && (descripcion != "Euros")) {
             nombre <- descripcion
 
           } else {

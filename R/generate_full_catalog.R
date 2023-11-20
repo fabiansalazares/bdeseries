@@ -55,14 +55,31 @@ generate_full_catalog <- function() {
   #     3. series whose numero_observaciones is not the maximum
   #     4. series whose appearance is not the first
   catalogo <- catalogo |>
-    dplyr::group_by(descripcion) |>
+    dplyr::group_by(nombre) |>
     dplyr::filter(fecha_ultima_observacion == max(fecha_ultima_observacion)) |>
     dplyr::filter(fecha_primera_observacion == min(fecha_primera_observacion)) |>
     dplyr::filter(numero_observaciones == max(numero_observaciones)) |>
     dplyr::arrange(nombre) |>
-    dplyr::filter(row_number() == 1)
+    dplyr::filter(dplyr::row_number() == 1) |>
+    dplyr::group_by(nombre) |>
+    dplyr::filter(fecha_ultima_observacion == max(fecha_ultima_observacion)) |>
+    dplyr::filter(fecha_primera_observacion == min(fecha_primera_observacion)) |>
+    dplyr::filter(numero_observaciones == max(numero_observaciones)) |>
+    dplyr::arrange(descripcion) |>
+    dplyr::filter(dplyr::row_number() == 1)
 
-
+  catalogo <- catalogo |>
+    dplyr::group_by(nombre) |>
+    dplyr::filter(fecha_ultima_observacion == max(fecha_ultima_observacion)) |>
+    dplyr::filter(fecha_primera_observacion == min(fecha_primera_observacion)) |>
+    dplyr::filter(numero_observaciones == max(numero_observaciones)) |>
+    dplyr::arrange(nombre) |>
+    dplyr::filter(dplyr::row_number() == 1) |>
+    dplyr::group_by(descripcion) |>
+    dplyr::filter(numero_observaciones == max(numero_observaciones)) |>
+    dplyr::filter(fecha_ultima_observacion == max(fecha_ultima_observacion)) |>
+    dplyr::filter(fecha_primera_observacion == max(fecha_primera_observacion)) |>
+    dplyr::filter(dplyr::row_number() == 1)
 
   feather::write_feather(catalogo, paste0(datos_path, "\\catalog.feather"))
 

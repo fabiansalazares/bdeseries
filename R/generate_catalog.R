@@ -108,12 +108,12 @@ generate_catalog <- function(directory,
       # some series' descriptions contain a description of the unit instead of the description itself
       # in these cases, alias is used to fill up descripcion field.
       if (!grepl("Miles de Euros", descripcion) &
-          descripcion != "Euros" &
-          descripcion != "Años" &
-          descripcion != "Monedas" &
-          descripcion != "Billetes" &
-          descripcion != "Porcentaje" &
-          !is.na(descripcion)) {
+          (descripcion != "Euros") &
+          (descripcion != "Años") &
+          (descripcion != "Monedas") &
+          (descripcion != "Billetes") &
+          (descripcion != "Porcentaje") &
+          (!is.na(descripcion))) {
         descripcion <- descripcion
       } else {
         descripcion <- alias

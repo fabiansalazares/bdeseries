@@ -25,6 +25,10 @@ download_series_full <- function(forcedownload=FALSE,
 
   }
 
+  if(length(list.files(datos_path, pattern="csv")) == 0) {
+    update_series()
+    return()
+  }
 
   if (!is.na(as.Date((file.info(paste0(datos_path, "\\", list.files(datos_path, pattern="csv") |> sample(1))))$mtime))) {
     message("Date of last update: ", as.Date((file.info(paste0(datos_path, "\\", list.files(datos_path, pattern="csv") |> sample(1))))$mtime) )

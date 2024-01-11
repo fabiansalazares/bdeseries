@@ -14,25 +14,25 @@ download_series_full <- function(forcedownload=FALSE,
                                  forceusebdecatalog=FALSE) {
 
 
-  datos_path <- gsub("/",
+  .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(datos_path))) { # }, "catalogo.feather"))){
+  if (!dir.exists(paste0(.datos_path))) { # }, "catalogo.feather"))){
     message("Creating bdeseries data directory...")
-    dir.create(datos_path,
+    dir.create(.datos_path,
                recursive = TRUE)
 
   }
 
-  if(length(list.files(datos_path, pattern="csv")) == 0) {
+  if(length(list.files(.datos_path, pattern="csv")) == 0) {
     update_series()
     return()
   }
 
-  if (!is.na(as.Date((file.info(paste0(datos_path, "\\", list.files(datos_path, pattern="csv") |> sample(1))))$mtime))) {
-    message("Date of last update: ", as.Date((file.info(paste0(datos_path, "\\", list.files(datos_path, pattern="csv") |> sample(1))))$mtime) )
-    if (as.Date((file.info(paste0(datos_path, "\\", list.files(datos_path, pattern="csv") |> sample(1))))$mtime) == Sys.Date() & !forcedownload) {
+  if (!is.na(as.Date((file.info(paste0(.datos_path, "\\", list.files(.datos_path, pattern="csv") |> sample(1))))$mtime))) {
+    message("Date of last update: ", as.Date((file.info(paste0(.datos_path, "\\", list.files(.datos_path, pattern="csv") |> sample(1))))$mtime) )
+    if (as.Date((file.info(paste0(.datos_path, "\\", list.files(.datos_path, pattern="csv") |> sample(1))))$mtime) == Sys.Date() & !forcedownload) {
       message("BdE data have already been downloaded today.")
       return()
     } else {

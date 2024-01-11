@@ -11,13 +11,13 @@ generate_full_database <- function() {
 
   error_list <- NULL
 
-  datos_path <- gsub("/",
+  .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(datos_path))) { # }, "catalogo.feather"))){
+  if (!dir.exists(paste0(.datos_path))) { # }, "catalogo.feather"))){
     message("Creating bdeseries data directory...")
-    dir.create(datos_path,
+    dir.create(.datos_path,
                recursive = TRUE)
 
   }

@@ -11,12 +11,12 @@ generate_full_catalog <- function() {
 
   message("Generating full catalog...")
 
-  datos_path <- gsub("/",
+  .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(datos_path))){
-    dir.create(datos_path,
+  if (!dir.exists(paste0(.datos_path))){
+    dir.create(.datos_path,
                recursive = TRUE)
 
   }
@@ -27,8 +27,8 @@ generate_full_catalog <- function() {
   catalogo <- generate_catalog(".")
 
   ### If directory datos/cf does not exist, create it
-  if (!dir.exists(paste0(datos_path, "\\cf"))){
-    dir.create(paste0(datos_path, "\\cf"),
+  if (!dir.exists(paste0(.datos_path, "\\cf"))){
+    dir.create(paste0(.datos_path, "\\cf"),
                recursive = TRUE)
 
   }
@@ -41,7 +41,7 @@ generate_full_catalog <- function() {
                 temp_zipfile_cf)
 
   unzip(temp_zipfile_cf, files = NULL, list = FALSE, overwrite = TRUE,
-        junkpaths = FALSE, exdir = paste0(datos_path, "\\cf"), unzip = "internal",
+        junkpaths = FALSE, exdir = paste0(.datos_path, "\\cf"), unzip = "internal",
         setTimes = FALSE)
 
 
@@ -81,7 +81,7 @@ generate_full_catalog <- function() {
     dplyr::filter(fecha_primera_observacion == max(fecha_primera_observacion)) |>
     dplyr::filter(dplyr::row_number() == 1)
 
-  feather::write_feather(catalogo, paste0(datos_path, "\\catalog.feather"))
+  feather::write_feather(catalogo, paste0(.datos_path, "\\catalog.feather"))
 
   usethis::use_data(catalogo, overwrite = TRUE)
 

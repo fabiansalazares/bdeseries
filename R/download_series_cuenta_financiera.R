@@ -12,26 +12,26 @@ download_series_cuenta_financiera <- function(forcedownload=FALSE,
 
   message("Downloading cuentas financieras...")
 
-  datos_path <- gsub("/",
+  .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(datos_path))){
-    dir.create(datos_path,
+  if (!dir.exists(paste0(.datos_path))){
+    dir.create(.datos_path,
                recursive = TRUE)
 
   }
 
-  message("Date of last update: ",as.Date(file.info(paste0(datos_path, "\\catalogo_cf.feather"))$mtime) )
+  message("Date of last update: ",as.Date(file.info(paste0(.datos_path, "\\catalogo_cf.feather"))$mtime) )
 
-  if (!is.na(as.Date(file.info(paste0(datos_path, "\\catalogo_cf.feather"))$mtime))) {
-    if (as.Date(file.info(paste0(datos_path, "\\catalogo_cf.feather"))$mtime) >= (Sys.Date() - lubridate::days(31)) & !forcedownload) {
+  if (!is.na(as.Date(file.info(paste0(.datos_path, "\\catalogo_cf.feather"))$mtime))) {
+    if (as.Date(file.info(paste0(.datos_path, "\\catalogo_cf.feather"))$mtime) >= (Sys.Date() - lubridate::days(31)) & !forcedownload) {
       message("BdE Cuentas Financieras data have already been downloaded today.")
-      return(feather::read_feather(paste0(datos_path, "\\catalogo_cf.feather")))
+      return(feather::read_feather(paste0(.datos_path, "\\catalogo_cf.feather")))
     } else {
 
       if (forcedownload) { message("BdE Cuentas Financieras is available, but will be downloaded anyways because forcedownload=TRUE.") }
-      if (as.Date(file.info(paste0(datos_path, "\\catalogo_cf.feather"))$mtime) <= (Sys.Date() - lubridate::days(31))) {
+      if (as.Date(file.info(paste0(.datos_path, "\\catalogo_cf.feather"))$mtime) <= (Sys.Date() - lubridate::days(31))) {
         message("Cuentas financieras series' catalog is older than 31 days. ")
         forcegeneratecatalogcf <- TRUE
         # ifelse(tolower(readline("Would you like to generate catalog for cuentas financieras (it will take a few minutes) ? (Y/n) ") %in% c("y", "yes", "s", "sí", "si"),
@@ -50,8 +50,8 @@ download_series_cuenta_financiera <- function(forcedownload=FALSE,
   catalogo_cf <- dplyr::tibble()
 
   ### If directory datos/cf does not exist, create it
-  if (!dir.exists(paste0(datos_path, "\\cf"))){
-    dir.create(paste0(datos_path, "\\cf"),
+  if (!dir.exists(paste0(.datos_path, "\\cf"))){
+    dir.create(paste0(.datos_path, "\\cf"),
                recursive = TRUE)
 
   }
@@ -64,16 +64,16 @@ download_series_cuenta_financiera <- function(forcedownload=FALSE,
                 temp_zipfile_cf)
 
   unzip(temp_zipfile_cf, files = NULL, list = FALSE, overwrite = TRUE,
-        junkpaths = FALSE, exdir = paste0(datos_path, "\\cf"), unzip = "internal",
+        junkpaths = FALSE, exdir = paste0(.datos_path, "\\cf"), unzip = "internal",
         setTimes = FALSE)
 
   if (forcegeneratecatalogcf) {
     # Processing csvs i TE_CF.zip to extract the series contained and generate catalog.
-    for(csv_cf_datos_path in list.files(paste0(datos_path, "\\cf"))) {
-      message("CSV file: ", csv_cf_datos_path)
+    for(csv_cf_.datos_path in list.files(paste0(.datos_path, "\\cf"))) {
+      message("CSV file: ", csv_cf_.datos_path)
 
-      csv_datos <- readr::read_csv(paste0(datos_path, "\\cf\\", csv_cf_datos_path),
-      # csv_datos <- readr::read_csv(csv_cf_datos_path,
+      csv_datos <- readr::read_csv(paste0(.datos_path, "\\cf\\", csv_cf_.datos_path),
+      # csv_datos <- readr::read_csv(csv_cf_.datos_path,
                                 locale = readr::locale("es",
                                                 encoding = "latin1"),
                                 trim_ws=TRUE,
@@ -81,8 +81,8 @@ download_series_cuenta_financiera <- function(forcedownload=FALSE,
       # remove duplicated column names from the csv file
       csv_datos <- csv_datos[ , !duplicated(colnames(csv_datos))]
 
-      # csv_datos <- read.csv(paste0(datos_path, "\\cf\\",  csv_cf_datos_path))
-      # csv_datos_rw <- read.csv(paste0(datos_path, "\\cf\\",  csv_cf_datos_path))
+      # csv_datos <- read.csv(paste0(.datos_path, "\\cf\\",  csv_cf_.datos_path))
+      # csv_datos_rw <- read.csv(paste0(.datos_path, "\\cf\\",  csv_cf_.datos_path))
 
       csv_datos_procesado <- csv_datos |>
         tail(nrow(csv_datos) - 6) |>
@@ -125,7 +125,7 @@ download_series_cuenta_financiera <- function(forcedownload=FALSE,
         serie_cf <- dplyr::tibble(nombre=columna,
                            numero=csv_datos[[columna]][1],
                            alias=csv_datos[[columna]][2],
-                           fichero=paste0("cf/", csv_cf_datos_path),
+                           fichero=paste0("cf/", csv_cf_.datos_path),
                            descripcion=stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:"),
                            tipo="",
                            unidades=csv_datos[[columna]][4+offset_serie],
@@ -149,10 +149,10 @@ download_series_cuenta_financiera <- function(forcedownload=FALSE,
     catalogo_cf <- catalogo_cf[ , !duplicated(colnames(catalogo_cf))]
 
     # save catalog_cf to feather
-    feather::write_feather(catalogo_cf, paste0(datos_path, paste("\\catalogo_cf.feather")))
+    feather::write_feather(catalogo_cf, paste0(.datos_path, paste("\\catalogo_cf.feather")))
 
   } else {
-    return(feather::read_feather(paste0(datos_path, "\\catalogo_cf.feather")))
+    return(feather::read_feather(paste0(.datos_path, "\\catalogo_cf.feather")))
   }
 
   return(catalogo_cf)

@@ -11,14 +11,14 @@
 #'
 update_series <- function() {
 
-  datos_path <- gsub("/",
+  .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
 
-  if (!dir.exists(paste0(datos_path))) { # }, "catalogo.feather"))){
+  if (!dir.exists(paste0(.datos_path))) { # }, "catalogo.feather"))){
     message("Creating bdeseries data directory...")
-    dir.create(datos_path,
+    dir.create(.datos_path,
                recursive = TRUE)
 
   }
@@ -38,7 +38,7 @@ update_series <- function() {
                   temp_zipfile)
 
     unzip(temp_zipfile, files = NULL, list = FALSE, overwrite = TRUE,
-          junkpaths = FALSE, exdir = datos_path, unzip = "internal",
+          junkpaths = FALSE, exdir = .datos_path, unzip = "internal",
           setTimes = FALSE)
 
 
@@ -46,9 +46,9 @@ update_series <- function() {
 
 
   ## Cuentas financieras
-  if (!dir.exists(paste0(datos_path, "\\cf"))) { # }, "catalogo.feather"))){
+  if (!dir.exists(paste0(.datos_path, "\\cf"))) { # }, "catalogo.feather"))){
     message("Creating bdeseries data directory...")
-    dir.create(datos_path,
+    dir.create(.datos_path,
                recursive = TRUE)
 
   }
@@ -63,7 +63,7 @@ update_series <- function() {
                 temp_cf_zipfile)
 
   unzip(temp_cf_zipfile, files = NULL, list = FALSE, overwrite = TRUE,
-        junkpaths = FALSE, exdir = paste0(datos_path, "\\cf"), unzip = "internal",
+        junkpaths = FALSE, exdir = paste0(.datos_path, "\\cf"), unzip = "internal",
         setTimes = FALSE)
 
 }

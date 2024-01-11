@@ -14,36 +14,36 @@ generate_catalog <- function(directory,
   message("Generating catalog from ", directory)
   # message("Saving into ", outputfile)
 
-  datos_path <- gsub("/",
+  .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(datos_path, "catalogo.feather"))){
-    dir.create(datos_path,
+  if (!dir.exists(paste0(.datos_path, "catalogo.feather"))){
+    dir.create(.datos_path,
                recursive = TRUE)
   }
 
   catalogo <- dplyr::tibble()
 
   # ### If directory datos/cf does not exist, create it
-  if (!dir.exists(paste0(datos_path, "\\cf"))){
-    dir.create(paste0(datos_path, "\\cf"),
+  if (!dir.exists(paste0(.datos_path, "\\cf"))){
+    dir.create(paste0(.datos_path, "\\cf"),
                recursive = TRUE)
 
   }
 
 
   # Processing csvs i TE_CF.zip to extract the series contained and generate catalog.
-  for(csv_cf_datos_path in list.files(paste0(datos_path, "\\", directory), pattern=".csv")) {
-    message("CSV file: ", csv_cf_datos_path)
+  for(csv_cf_.datos_path in list.files(paste0(.datos_path, "\\", directory), pattern=".csv")) {
+    message("CSV file: ", csv_cf_.datos_path)
 
-    if (stringr::str_detect(csv_cf_datos_path, "catalogo")) {
+    if (stringr::str_detect(csv_cf_.datos_path, "catalogo")) {
       message("Skipping catalogo*.csv")
       next
     }
 
-    csv_datos <- readr::read_csv(paste0(datos_path, "\\", directory, "\\", csv_cf_datos_path),
-                                 # csv_datos <- readr::read_csv(csv_cf_datos_path,
+    csv_datos <- readr::read_csv(paste0(.datos_path, "\\", directory, "\\", csv_cf_.datos_path),
+                                 # csv_datos <- readr::read_csv(csv_cf_.datos_path,
                                  locale = readr::locale("es",
                                                         encoding = "latin1"),
                                  trim_ws=TRUE,
@@ -126,8 +126,8 @@ generate_catalog <- function(directory,
                                 numero=as.character(csv_datos[[columna]][1]),
                                 # alias=as.character(csv_datos[[columna]][2]),
                                 alias=alias,
-                                # fichero=paste0(datos_path, "\\", directory, "\\", csv_cf_datos_path),
-                                fichero=paste0(directory, "\\", csv_cf_datos_path),
+                                # fichero=paste0(.datos_path, "\\", directory, "\\", csv_cf_.datos_path),
+                                fichero=paste0(directory, "\\", csv_cf_.datos_path),
                                 # descripcion=stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:"),
                                 descripcion=descripcion,
 

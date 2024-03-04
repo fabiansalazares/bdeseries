@@ -20,7 +20,7 @@ get_release_schedule <- function(search_str) {
                   uid = UID) |>
     dplyr::select(-`DTEND;TZID=Europe/Madrid`, -alt_text) |>
     dplyr::mutate(fecha_evento = stringr::str_sub(fecha_evento, 1,8) |> as.Date(format="%Y%m%d"),
-                  fecha = stringr::str_sub(fecha_evento, 1,8) |> as.Date(format="%Y%m%d"))
+                  fecha = stringr::str_sub(fecha, 1,8) |> as.Date(format="%Y%m%d"))
     # dplyr::mutate(fecha_evento = lubridate::ymd(fecha_evento),
     #               fecha = lubridate::ymd(fecha))
 

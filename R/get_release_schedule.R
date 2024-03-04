@@ -9,7 +9,9 @@
 
 get_release_schedule <- function(search_str) {
 
-  events_df <- calendar::ic_read("https://www.bde.es/webbe/es/estadisticas/compartido/calendario/ics/calendario-bde-2023.ics") |>
+  # Descargar de: https://www.bde.es/webbe/es/estadisticas/compartido/calendario/ics/calendario-bde.ics
+
+  events_df <- calendar::ic_read(paste0("https://www.bde.es/webbe/es/estadisticas/compartido/calendario/ics/calendario-bde.ics")) |>
     dplyr::rename(fecha_evento = `DTSTART;TZID=Europe/Madrid`,
                   fecha = DTSTAMP,
                   resumen = SUMMARY,
@@ -17,8 +19,9 @@ get_release_schedule <- function(search_str) {
                   alt_text = `X-ALT-DESC;FMTTYPE=text/html`,
                   uid = UID) |>
     dplyr::select(-`DTEND;TZID=Europe/Madrid`, -alt_text) |>
-    dplyr::mutate(fecha_evento = lubridate::ymd(fecha_evento),
-                  fecha = lubridate::ymd(fecha))
+    dplyr::mutate(fecha_evento = stringr::str_sub(fecha_evento, 1,8) |> as.Date(format="%Y%m%d"))
+    # dplyr::mutate(fecha_evento = lubridate::ymd(fecha_evento),
+    #               fecha = lubridate::ymd(fecha))
 
   return(events_df)
 }

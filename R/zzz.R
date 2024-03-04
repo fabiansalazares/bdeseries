@@ -1,5 +1,5 @@
 .onLoad <- function(...) {
-  packageStartupMessage("bdeseries v0.48-20240111 - miguel@fabiansalazar.es")
+  packageStartupMessage("bdeseries 0.49-20240304 - miguel@fabiansalazar.es")
 
   download_series_full()
 }

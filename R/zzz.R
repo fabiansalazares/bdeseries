@@ -1,5 +1,10 @@
 .onLoad <- function(...) {
-  packageStartupMessage("bdeseries 0.49-20240304 - miguel@fabiansalazar.es")
+  packageStartupMessage("bdeseries 0.50-20240927 - miguel@fabiansalazar.es")
 
-  download_series_full()
+  if(!getOption("bdeseries_disable_autoupdate")) {
+    download_series_full()
+  } else {
+    message("Auto update has been disabled. To update the series' database run: download_series_full()")
+  }
+
 }

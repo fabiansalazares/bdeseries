@@ -12,63 +12,63 @@ generate_catalog <- function(directory,
                              db="") {
 
   message("Generating catalog from ", directory)
-  # message("Saving into ", outputfile)
 
   .datos_path <- gsub("/",
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(.datos_path, "catalogo.feather"))){
-    dir.create(.datos_path,
-               recursive = TRUE)
-  }
-
   catalogo <- dplyr::tibble()
 
-  # ### If directory datos/cf does not exist, create it
-  if (!dir.exists(paste0(.datos_path, "\\cf"))){
-    dir.create(paste0(.datos_path, "\\cf"),
-               recursive = TRUE)
+  csv_files <- fs::dir_ls(paste0(.datos_path, "\\", directory), glob="*.csv")
+  csv_file_counter <- 0
+  csv_file_total <- length(csv_files)
+  offset_serie <- 0
 
-  }
+  catalogo <- lapply(
+    X=csv_files,
+    function(.x) {
+      cat(
+        sprintf("\rFicheros procesados: %d \t %d \t - \t %s",
+                csv_file_counter,
+                csv_file_total,
+                scales::number_format(accuracy=0.01, decimal.mark=",", big.mark=".", suffix="%", scale=1e2)(csv_file_counter/csv_file_total)
+        )
+      )
 
-
-  # Processing csvs i TE_CF.zip to extract the series contained and generate catalog.
-  for(csv_cf_.datos_path in list.files(paste0(.datos_path, "\\", directory), pattern=".csv")) {
-    message("CSV file: ", csv_cf_.datos_path)
-
-    if (stringr::str_detect(csv_cf_.datos_path, "catalogo")) {
-      message("Skipping catalogo*.csv")
-      next
-    }
-
-    csv_datos <- readr::read_csv(paste0(.datos_path, "\\", directory, "\\", csv_cf_.datos_path),
-                                 # csv_datos <- readr::read_csv(csv_cf_.datos_path,
-                                 locale = readr::locale("es",
-                                                        encoding = "latin1"),
-                                 trim_ws=TRUE,
-                                 name_repair="minimal")
-    # remove duplicated column names from the csv file
-    csv_datos <- csv_datos[ , !duplicated(colnames(csv_datos))]
+      utils::flush.console()
 
 
-    csv_datos_procesado <- csv_datos |>
-      tail(nrow(csv_datos) - 6) |>
-      # dplyr::rename(fecha = `NOMBRE DE LA SERIE`) |>
-      dplyr::rename(fecha=1) |>
-      # dplyr::select(fecha, one_of(stringr::str_replace(code   ,"#",".") |> stringr::str_replace("\\$", ".") )) |>
-      # dplyr::rename(valores = one_of(stringr::str_replace(code,"#",".") |> stringr::str_replace("\\$", "."))) |>
-      dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS") |> # & valores != "_") |>
-      # mutate(fecha_raw = fecha) %>%
-      #tail(100) %>%
-      dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
-                                           as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
-                                           dplyr::if_else(stringr::str_length(fecha) == 8,
-                                                          as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
-                                                                                                              stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
-                                                                                                                                              ". ",
-                                                                                                                                              stringr::str_sub(fecha,5,8)))),
-                                                                                                       "%d %b %Y"))),
+      if (stringr::str_detect(.x, "catalogo")) {
+        message("Skipping catalogo*.csv")
+        return()
+      }
+
+
+      csv_datos <- readr::read_csv(
+        .x,
+        # csv_datos <- readr::read_csv(.x,
+        locale = readr::locale("es",
+                               encoding = "latin1"),
+        trim_ws=TRUE,
+        name_repair="minimal",
+        show_col_types = FALSE
+      )
+
+      # remove duplicated column names from the csv file
+      csv_datos <- csv_datos[ , !duplicated(colnames(csv_datos))]
+
+      csv_datos_procesado <- csv_datos |>
+        tail(nrow(csv_datos) - 6) |>
+        dplyr::rename(fecha=1) |>
+        dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS") |> # & valores != "_") |>
+        dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
+                                             as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
+                                             dplyr::if_else(stringr::str_length(fecha) == 8,
+                                                            as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
+                                                                                                                stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
+                                                                                                                                                ". ",
+                                                                                                                                                stringr::str_sub(fecha,5,8)))),
+                                                                                                         "%d %b %Y"))),
                                                           as.Date(paste0(stringr::str_sub(fecha, 1,2),
                                                                          " ",
                                                                          stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 4,6))),
@@ -100,8 +100,10 @@ generate_catalog <- function(directory,
       offset_serie <- 0
     }
 
+    series_en_csv_df <- lapply(
+      X=(names(csv_datos)) |> _[-1],
+      FUN=function(columna) {
 
-    for (columna in (names(csv_datos)) |> _[-1]) {
       descripcion <- stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:")
       alias <- as.character(csv_datos[[columna]][2])
 
@@ -119,18 +121,11 @@ generate_catalog <- function(directory,
         descripcion <- alias
       }
 
-
-      message("serie: ", columna)
-
       serie_cf <- dplyr::tibble(nombre=columna,
                                 numero=as.character(csv_datos[[columna]][1]),
-                                # alias=as.character(csv_datos[[columna]][2]),
                                 alias=alias,
-                                # fichero=paste0(.datos_path, "\\", directory, "\\", csv_cf_.datos_path),
-                                fichero=paste0(directory, "\\", csv_cf_.datos_path),
-                                # descripcion=stringr::str_remove(csv_datos[[columna]][3], pattern="Descripción de la DSD:"),
+                                fichero=.x,
                                 descripcion=descripcion,
-
                                 tipo="",
                                 unidades=dplyr::if_else(short_csv_format,
                                                  "",
@@ -150,23 +145,28 @@ generate_catalog <- function(directory,
                                 numero_observaciones=nrow(csv_datos_procesado[columna]),
                                 titulo="",
                                 fuente=as.character(csv_datos[[columna]][length(csv_datos[[columna]])-1]),
-                                # fuente=dplyr::if_else(short_csv_format | withoutfuente,
-                                #                "",
-                                #                csv_datos[[columna]][length(csv_datos[[columna]])-1]),
                                 notas="",
                                 db=db)
+      return(serie_cf)
 
-      catalogo <- dplyr::bind_rows(catalogo, serie_cf)
+      }
+    ) |> dplyr::bind_rows()
+
+    csv_file_counter <<- csv_file_counter + 1
+
+    return(series_en_csv_df)
     }
-  }
+  ) |>
+    dplyr::bind_rows() |>
+    dplyr::ungroup() |>
+    dplyr::mutate( # extraer de la ruta al fichero todos los directorios
+      fichero = stringr::str_extract(fichero, "(?<=bdeseries/).*$")
+    )
+
+  browser()
 
   # remove duplicated column names again from the full catalog
   catalogo <- catalogo[ , !duplicated(colnames(catalogo))]
-
-  # remove duplicated descripcion s that point to series with less tha
-
-
-
 
   return(catalogo)
 

@@ -18,13 +18,6 @@ download_series_full <- function(forcedownload=FALSE,
                      "\\\\",
                      tools::R_user_dir("bdeseries", which = "data"))
 
-  if (!dir.exists(paste0(.datos_path))) { # }, "catalogo.feather"))){
-    message("Creating bdeseries data directory...")
-    dir.create(.datos_path,
-               recursive = TRUE)
-
-  }
-
   if(length(list.files(.datos_path, pattern="csv")) == 0) {
     update_series()
     return()
@@ -39,6 +32,7 @@ download_series_full <- function(forcedownload=FALSE,
       update_series()
     }
   }
+
 
 
 

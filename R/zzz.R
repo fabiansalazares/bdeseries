@@ -1,12 +1,10 @@
 .onLoad <- function(...) {
-  packageStartupMessage("bdeseries 0.50-20240927 - miguel@fabiansalazar.es")
+  packageStartupMessage("bdeseries 0.51-20240928 - miguel@fabiansalazar.es")
 
-  if(!is.null(getOption("bdeseries_disable_autoupdate"))) {
-    if(!getOption("bdeseries_disable_autoupdate")) {
+  if(is.null(getOption("bdeseries_disable_autoupdate")) | !getOption("bdeseries_disable_autoupdate")) {
       download_series_full()
-    }
   } else {
-    message("Auto update has been disabled. To update the series' database run: download_series_full()")
+    message("Auto update is disabled by. To manually update the series' database run: download_series_full()")
   }
 
 }

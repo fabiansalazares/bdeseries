@@ -11,9 +11,11 @@ generate_full_catalog <- function() {
 
   message("Generating full catalog...")
 
-  .datos_path <- gsub("/",
-                     "\\\\",
-                     tools::R_user_dir("bdeseries", which = "data"))
+  # .datos_path <- gsub("/",
+  #                    "\\\\",
+  #                    tools::R_user_dir("bdeseries", which = "data"))
+
+  .datos_path <- get_data_path()
 
   download_series_full(forcedownload = TRUE)
 
@@ -21,7 +23,7 @@ generate_full_catalog <- function() {
     generate_catalog("."),
     generate_catalog("cf")
   )
- browser()
+
   # to obtain a 1-to-1 relationship between nombres and descripciones, we filter out:
   #     (by order of importance)
   #     1. series whose last observation is not the latest available
@@ -41,9 +43,10 @@ generate_full_catalog <- function() {
     dplyr::filter(numero_observaciones == max(numero_observaciones)) |>
     dplyr::arrange(descripcion) |>
     dplyr::filter(dplyr::row_number() == 1) |>
-    dplyr::ungroup()
+    dplyr::ungroup() |>
+    dplyr::as_tibble()
 
-  feather::write_feather(catalogo, paste0(.datos_path, "\\catalog.feather"))
+  feather::write_feather(catalogo, paste0(.datos_path, "/catalog.feather"))
 
   usethis::use_data(catalogo, overwrite = TRUE)
 

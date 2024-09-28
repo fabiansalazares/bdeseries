@@ -1,13 +1,8 @@
-#' Dump the full Banco de España series catalog.
-#'
-#' This function returns the full catalog of Banco de España series.
-#'
+#' Return the full catalog of Banco de España series.
 #' @keywords dump full banco de españa series catalog
+#' @examples get_catalog()
 #' @export
-#' @examples
-#' get_catalog()
-
-get_catalog <- function(forcedownload=FALSE) {
+get_catalog <- function() {
 
   return(bdeseries::catalogo)
 

@@ -1,25 +1,19 @@
-#' Generate a catalog from a folder
-#'
-#' This function generates a series catalog from a list of csv files containing Banco de España series.
-#'
+#' This function Generate a catalog of the series contained in the csv files located in a given directory passed as argument.
+#' @param directory Character string. The name of the directory that contains the csv files to be processed.
+#' @param db Character string. The name of the database that the series contained in the csv belong to.
 #' @keywords download full banco de españa series
 #' @export
-#' @examples
-#' generate_catalog()
+#' @examples generate_catalog("TE_CF)
+generate_catalog <- function(
+    directory,
+    db="") {
 
-
-generate_catalog <- function(directory,
-                             db="") {
+  .datos_path <- get_data_path()
 
   message("Generating catalog from ", directory)
 
-  .datos_path <- gsub("/",
-                     "\\\\",
-                     tools::R_user_dir("bdeseries", which = "data"))
-
-  catalogo <- dplyr::tibble()
-
   csv_files <- fs::dir_ls(paste0(.datos_path, "\\", directory), glob="*.csv")
+
   csv_file_counter <- 0
   csv_file_total <- length(csv_files)
   offset_serie <- 0
@@ -37,16 +31,13 @@ generate_catalog <- function(directory,
 
       utils::flush.console()
 
-
       if (stringr::str_detect(.x, "catalogo")) {
         message("Skipping catalogo*.csv")
         return()
       }
 
-
       csv_datos <- readr::read_csv(
         .x,
-        # csv_datos <- readr::read_csv(.x,
         locale = readr::locale("es",
                                encoding = "latin1"),
         trim_ws=TRUE,
@@ -58,7 +49,7 @@ generate_catalog <- function(directory,
       csv_datos <- csv_datos[ , !duplicated(colnames(csv_datos))]
 
       csv_datos_procesado <- csv_datos |>
-        tail(nrow(csv_datos) - 6) |>
+        utils::tail(nrow(csv_datos) - 6) |>
         dplyr::rename(fecha=1) |>
         dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS") |> # & valores != "_") |>
         dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
@@ -91,7 +82,6 @@ generate_catalog <- function(directory,
       # some csvs contain only three headers, and then continue to having dates:
       if (stringr::str_detect(csv_datos_procesado[4], "FUENTE") |  stringr::str_detect(csv_datos_procesado[5], "FUENTE")) {
         offset_serie <- 1
-      # } else if(csv_datos_procesado[[1]][5] == "FRECUENCIA" | csv_datos_procesado[[1]][4]) { # HAY QUE SER CAPACES DE DETECTAR ENE 1962 Y SIMILARES CON UNA EXPRESIÓN REGULAR, EN FILA 4
         # cuando la tercera fila contiene una fecha
         } else if(stringr::str_detect(csv_datos_procesado[[1]][4], "\\b\\d{4}\\b")) {
         short_csv_format <- TRUE
@@ -162,8 +152,6 @@ generate_catalog <- function(directory,
     dplyr::mutate( # extraer de la ruta al fichero todos los directorios
       fichero = stringr::str_extract(fichero, "(?<=bdeseries/).*$")
     )
-
-  browser()
 
   # remove duplicated column names again from the full catalog
   catalogo <- catalogo[ , !duplicated(colnames(catalogo))]

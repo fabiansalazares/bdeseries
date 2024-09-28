@@ -4,8 +4,7 @@
 #'
 #' @keywords download full banco de españa series
 #' @export
-#' @examples
-#' download_series_full()
+#' @examples download_series_full()
 
 download_series_full <- function(forcedownload=FALSE,
                                  forcegeneratecatalog=FALSE,
@@ -13,10 +12,7 @@ download_series_full <- function(forcedownload=FALSE,
                                  forcegeneratecatalogcf=FALSE,
                                  forceusebdecatalog=FALSE) {
 
-
-  .datos_path <- gsub("/",
-                     "\\\\",
-                     tools::R_user_dir("bdeseries", which = "data"))
+  .datos_path <- get_data_path()
 
   if(length(list.files(.datos_path, pattern="csv")) == 0) {
     update_series()
@@ -32,10 +28,5 @@ download_series_full <- function(forcedownload=FALSE,
       update_series()
     }
   }
-
-
-
-
-
 }
 

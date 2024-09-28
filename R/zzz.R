@@ -27,3 +27,10 @@
   }
 
 }
+
+get_data_path <- function() {
+  gsub(
+    "\\\\",
+    "/",
+    tools::R_user_dir("bdeseries", which = "data"))
+}

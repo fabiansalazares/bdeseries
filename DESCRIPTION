@@ -1,10 +1,10 @@
 Package: bdeseries
 Type: Package
-Title: Retrieve time series from Banco de España.
+Title: Retrieve time series from Banco de España
 Version: 0.60-20240928
 Author: Miguel Fabian Salazar
 Maintainer: Miguel Fabian Salazar <miguel@fabiansalazar.es>
-Description: bdeseries retrieves time series from the Banco de España (bde.es) website. 
+Description: bdeseries process and retrieves the time series available at the Banco de España (bde.es) website. 
  Currently, Boletín Estadístico, Síntesis de Indicadores, Tipos de Interés and Encuesta de Préstamos Bancarios datasets are currently supported. 
  Cuentas Financieras dataset is only partially supported.
 License: GPLv3

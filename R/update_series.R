@@ -1,22 +1,10 @@
-#' Update the series.
-#'
 #' This function downloads the datasets from Banco de España and replaces the existing CSV files containing the series (if any).
-#'
 #' @keywords update download full banco de españa series
+#' @examples update_series()
 #' @export
-#' @examples
-#' update_series()
-#'
-#'
-#'
 update_series <- function() {
 
-  .datos_path <- gsub(
-    "\\\\",
-    "/",
-    tools::R_user_dir("bdeseries", which = "data")
-    )
-
+  .datos_path <- get_data_path()
 
   list_of_zip_files <- c(
     "be", # boletín estadístico
@@ -34,7 +22,7 @@ update_series <- function() {
       temp_zipfile <- tempfile()
       message("Descargando ", .bde_data_set, ".zip...")
 
-      download.file(paste0("https://www.bde.es/webbe/es/estadisticas/compartido/datos/zip/", .bde_data_set, ".zip"),
+      utils::download.file(paste0("https://www.bde.es/webbe/es/estadisticas/compartido/datos/zip/", .bde_data_set, ".zip"),
                     temp_zipfile)
 
       exdir_path <- ifelse(
@@ -43,7 +31,7 @@ update_series <- function() {
         .datos_path
       )
 
-      unzip(
+      utils::unzip(
         temp_zipfile,
         overwrite = TRUE,
         list=TRUE,
@@ -53,7 +41,7 @@ update_series <- function() {
         setTimes = FALSE
         )
 
-      unzip(
+      utils::unzip(
         temp_zipfile,
         overwrite = TRUE,
         # list=TRUE,

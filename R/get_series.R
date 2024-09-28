@@ -3,16 +3,13 @@
 #' @keywords download get series
 #' @examples get_series("")
 #' @returns This function returns a tibble containing the series that match the given series' code(s)
-#' s@export
+#' @examples get_series(")
+#' @export
 get_series <- function(codes,
                        verbose=FALSE,
                        usefulldatabase=FALSE) {
 
-  .datos_path <- gsub(
-    "\\\\",
-    "/",
-    tools::R_user_dir("bdeseries", which = "data")
-    )
+  .datos_path <- get_data_path()
 
   .series_final_df <- lapply(
     X=codes,
@@ -36,18 +33,10 @@ get_series <- function(codes,
                    dplyr::filter(nombre == .code) |>
                    dplyr::distinct(fichero))$fichero))
 
-      # fecha_primera_observacion <- bdeseries::catalogo |>
-      #   dplyr::filter(nombre == .code) |>
-      #   dplyr::distinct(fecha_primera_observacion)
-      #
-      # fecha_ultima_observacion <- bdeseries::catalogo |>
-      #   dplyr::filter(nombre == .code) |>
-      #   dplyr::distinct(fecha_ultima_observacion)
-      #
       descripcion <- (bdeseries::catalogo |>
                         dplyr::filter(nombre == .code) |>
                         dplyr::distinct(descripcion))$descripcion
-      #
+
       alias <- (bdeseries::catalogo |>
                   dplyr::filter(nombre == .code) |>
                   dplyr::distinct(alias))$alias
@@ -78,7 +67,7 @@ get_series <- function(codes,
           if(verbose) message(".csv_fichero_path: ", .csv_fichero_path)
 
           .serie <-tryCatch({
-            csv_datos <- read.csv(.csv_fichero_path)
+            csv_datos <- utils::read.csv(.csv_fichero_path)
 
             if (!(.code |> stringr::str_replace("#", ".") |>
                   stringr::str_replace("\\$", ".") |>
@@ -88,17 +77,15 @@ get_series <- function(codes,
             }
 
             csv_datos |>
-              tail(nrow(csv_datos) - 6) |>
+              utils::tail(nrow(csv_datos) - 6) |>
               dplyr::rename(fecha = 1) |>
-              dplyr::select(fecha, one_of(stringr::str_replace(.code, "#",".") |>
+              dplyr::select(fecha, tidyselect::any_of(stringr::str_replace(.code, "#",".") |>
                                             stringr::str_replace("\\$", ".") |>
                                             stringr::str_replace("\\%", "."))) |>
-              dplyr::rename(valores = one_of(stringr::str_replace(.code,"#",".") |>
+              dplyr::rename(valores = tidyselect::any_of(stringr::str_replace(.code,"#",".") |>
                                                stringr::str_replace("\\$", ".") |>
                                                stringr::str_replace("\\%", "."))) |>
               dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS") |> # & valores != "_") |>
-              # mutate(fecha_raw = fecha) %>%
-              #tail(100) %>%
               dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
                                                    as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
                                                    dplyr::if_else(stringr::str_length(fecha) == 8,
@@ -137,15 +124,6 @@ get_series <- function(codes,
                             frecuencia = (bdeseries::catalogo |>
                                             dplyr::filter(nombre == .code) |>
                                             dplyr::distinct(frecuencia))$frecuencia[[1]],
-                            # fecha_primera_observacion = (bdeseries::catalogo |>
-                            #                                dplyr::filter(nombre == .code) |>
-                            #                                dplyr::distinct(fecha_primera_observacion))$fecha_primera_observacion[[1]],
-                            # fecha_ultima_observacion = (bdeseries::catalogo |>
-                            #                               dplyr::filter(nombre == .code) |>
-                            #                               dplyr::distinct(fecha_ultima_observacion))$fecha_ultima_observacion[[1]],
-                            # numero_observaciones = max((bdeseries::catalogo |>
-                            #                               dplyr::filter(nombre == .code) |>
-                            #                               dplyr::distinct(numero_observaciones))$numero_observaciones),
                             fecha_primera_observacion = NA,
                             fecha_ultima_observacion = NA,
                             numero_observaciones = NA,
@@ -195,8 +173,8 @@ get_series <- function(codes,
     }
   ) |>
     dplyr::bind_rows() |>
-    dplyr::select(fecha, nombres, valores, codigo, unidades, frecuencia, descripcion_unidades_exponente, fuente)
-
+    dplyr::select(fecha, nombres, valores, codigo, unidades, frecuencia, descripcion_unidades_exponente, fuente) |>
+    dplyr::arrange(fecha, nombres)
 
   if("fecha" %in% names(.series_final_df)) {
     .series_final_df <- .series_final_df |>

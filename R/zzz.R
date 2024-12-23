@@ -1,5 +1,5 @@
 .onLoad <- function(...) {
-  packageStartupMessage("bdeseries 0.60-20240928 - miguel@fabiansalazar.es")
+  packageStartupMessage("bdeseries 0.62-20241223 - miguel@fabiansalazar.es")
 
   .datos_path <- get_data_path()
 
@@ -13,8 +13,11 @@
                recursive = TRUE)
   }
 
-  if (!dir.exists(paste0(.datos_path, "\\cf"))){
-    dir.create(paste0(.datos_path, "\\cf"),
+  if (!dir.exists(paste0(.datos_path, "/cf"))){
+    message(sprintf("%s not found", paste0(.datos_path, "/cf")))
+    message("Creating...")
+
+    dir.create(paste0(.datos_path, "/cf"),
                recursive = TRUE)
   }
 

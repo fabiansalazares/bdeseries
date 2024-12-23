@@ -4,9 +4,6 @@
 #'
 #' @keywords generate data object full database series Banco de España BdE
 #' @export
-#' @examples
-#' generate_full_database()
-#'
 generate_full_database <- function() {
 
   error_list <- NULL

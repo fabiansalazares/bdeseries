@@ -24,5 +24,4 @@ Imports:
     stringr,
     tidyselect,
     timeDate,
-    usethis,
-    withr
+    usethis

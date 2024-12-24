@@ -79,6 +79,8 @@ get_series <- function(codes,
               next
             }
 
+            browser()
+
 
             csv_datos |>
               utils::tail(nrow(csv_datos) - 6) |>
@@ -103,7 +105,7 @@ get_series <- function(codes,
                 stringr::str_detect(fecha, "SEP") ~ stringr::str_replace(fecha, "SEP", "09"),
                 stringr::str_detect(fecha, "OCT") ~ stringr::str_replace(fecha, "OCT", "10"),
                 stringr::str_detect(fecha, "NOV") ~ stringr::str_replace(fecha, "NOV", "11"),
-                stringr::str_detect(fecha, "DIC") ~ stringr::str_replace(fecha, "DIC", "11"),
+                stringr::str_detect(fecha, "DIC") ~ stringr::str_replace(fecha, "DIC", "12"),
                 TRUE ~ fecha
               )) |>
               dplyr::mutate(

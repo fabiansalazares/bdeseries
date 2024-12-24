@@ -76,6 +76,8 @@ get_series <- function(codes,
               next
             }
 
+            # browser()
+
             csv_datos |>
               utils::tail(nrow(csv_datos) - 6) |>
               dplyr::rename(fecha = 1) |>
@@ -86,20 +88,48 @@ get_series <- function(codes,
                                                stringr::str_replace("\\$", ".") |>
                                                stringr::str_replace("\\%", "."))) |>
               dplyr::filter(fecha != "FUENTE" & fecha != "NOTAS") |> # & valores != "_") |>
-              dplyr::mutate(fecha = dplyr::if_else(stringr::str_length(fecha) == 4,
-                                                   as.Date(paste0("01 01 ", fecha), format="%d %m %Y"),
-                                                   dplyr::if_else(stringr::str_length(fecha) == 8,
-                                                                  as.Date(timeDate::timeLastDayInMonth(as.Date(paste0("01 ",
-                                                                                                                      stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 1,3),
-                                                                                                                                                      ". ",
-                                                                                                                                                      stringr::str_sub(fecha,5,8)))),
-                                                                                                               "%d %b %Y"))),
-                                                                  as.Date(paste0(stringr::str_sub(fecha, 1,2),
-                                                                                 " ",
-                                                                                 stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 4,6))),
-                                                                                 ". ",
-                                                                                 stringr::str_sub(fecha,8,11)), format="%d %b %Y")
-                                                   ))) |>
+              dplyr::mutate(
+                fecha = dplyr::case_when(
+                stringr::str_detect(fecha, "ENE") ~ stringr::str_replace(fecha, "ENE", "JAN"),
+                stringr::str_detect(fecha, "FEB") ~ stringr::str_replace(fecha, "FEB", "FEB"),
+                stringr::str_detect(fecha, "MAR") ~ stringr::str_replace(fecha, "MAR", "MAR"),
+                stringr::str_detect(fecha, "ABR") ~ stringr::str_replace(fecha, "ABR", "APR"),
+                stringr::str_detect(fecha, "MAY") ~ stringr::str_replace(fecha, "MAY", "MAY"),
+                stringr::str_detect(fecha, "JUN") ~ stringr::str_replace(fecha, "JUN", "JUN"),
+                stringr::str_detect(fecha, "JUL") ~ stringr::str_replace(fecha, "JUL", "JUL"),
+                stringr::str_detect(fecha, "AGO") ~ stringr::str_replace(fecha, "AUG", "AGO"),
+                stringr::str_detect(fecha, "SEP") ~ stringr::str_replace(fecha, "SEP", "SEP"),
+                stringr::str_detect(fecha, "OCT") ~ stringr::str_replace(fecha, "OCT", "OCT"),
+                stringr::str_detect(fecha, "NOV") ~ stringr::str_replace(fecha, "NOV", "NOV"),
+                stringr::str_detect(fecha, "DIC") ~ stringr::str_replace(fecha, "DIC", "DEC"),
+                TRUE ~ fecha
+              )) |>
+              dplyr::mutate(
+                fecha = dplyr::if_else(
+                  stringr::str_length(fecha) == 4,
+                  # format: YYYY
+                  sprintf("01 01 %s", fecha),
+                  dplyr::if_else(
+                    stringr::str_length(fecha) == 8,
+                    # format: MMM YYYY
+                    sprintf(
+                      "01 %s %s",
+                      stringr::str_sub(1,3),
+                      stringr::str_sub(5,8)
+                    ),
+                    # format: dd MMM YYYY
+                    sprintf(
+                      "%s %s %s",
+                      stringr::str_sub(1,2),
+                      stringr::str_to_sentence(paste0(stringr::str_sub(fecha, 4,6))),
+                      stringr::str_sub(fecha,8,11)
+                    )
+                  )
+                )
+              ) |>
+              dplyr::mutate(
+                fecha = timeDate::timeLastDayInMonth(as.Date(fecha, "%d %m %Y")) |> as.Date()
+              ) |>
               dplyr::mutate(nombres = nombre) |>
               dplyr::mutate(valores = stringr::str_replace(valores, "_", "")) |>
               dplyr::mutate(valores = as.double(valores)) |>
@@ -176,10 +206,10 @@ get_series <- function(codes,
     dplyr::select(fecha, nombres, valores, codigo, unidades, frecuencia, descripcion_unidades_exponente, fuente) |>
     dplyr::arrange(fecha, nombres)
 
-  if("fecha" %in% names(.series_final_df)) {
-    .series_final_df <- .series_final_df |>
-      dplyr::arrange(fecha)
-  }
+  # if("fecha" %in% names(.series_final_df)) {
+  #   .series_final_df <- .series_final_df |>
+  #     dplyr::arrange(fecha)
+  # }
 
   return(.series_final_df )
 }

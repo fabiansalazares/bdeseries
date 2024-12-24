@@ -79,7 +79,6 @@ get_series <- function(codes,
               next
             }
 
-            browser()
 
 
             csv_datos |>

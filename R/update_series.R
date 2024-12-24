@@ -31,20 +31,20 @@ update_series <- function() {
         .datos_path
       )
 
-      utils::unzip(
-        temp_zipfile,
-        overwrite = TRUE,
-        list=TRUE,
-        junkpaths = FALSE,
-        exdir = exdir_path,
-        unzip = "internal",
-        setTimes = FALSE
-        )
+      # utils::unzip(
+      #   temp_zipfile,
+      #   overwrite = TRUE,
+      #   list=TRUE,
+      #   junkpaths = FALSE,
+      #   exdir = exdir_path,
+      #   unzip = "internal",
+      #   setTimes = FALSE
+      #   )
 
       utils::unzip(
         temp_zipfile,
         overwrite = TRUE,
-        # list=TRUE,
+        list=FALSE,
         junkpaths = FALSE,
         exdir = exdir_path,
         unzip = "internal",

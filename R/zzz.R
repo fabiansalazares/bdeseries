@@ -1,5 +1,5 @@
 .onLoad <- function(...) {
-  packageStartupMessage("bdeseries 0.63-20241224 - miguel@fabiansalazar.es")
+  packageStartupMessage("bdeseries 0.64-20250325 - miguel@fabiansalazar.es")
 
   .datos_path <- get_data_path()
 

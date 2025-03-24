@@ -69,8 +69,13 @@ get_series <- function(codes,
             message(".code: ", .code)
           }
 
-          .serie <-tryCatch({
-            csv_datos <- utils::read.csv(.csv_fichero_path)
+          .serie <- tryCatch({
+            # csv_datos <- utils::read.csv(.csv_fichero_path)
+
+            csv_datos <- readr::read_csv(
+              .csv_fichero_path,
+              locale=readr::locale(encoding = "ISO-8859-1")
+              )
 
             if (!(.code |> stringr::str_replace("#", ".") |>
                   stringr::str_replace("\\$", ".") |>
@@ -78,8 +83,6 @@ get_series <- function(codes,
               if(verbose) message("La serie ", .code, " no existe en ", .csv_fichero_path)
               next
             }
-
-
 
             csv_datos |>
               utils::tail(nrow(csv_datos) - 6) |>
@@ -171,8 +174,8 @@ get_series <- function(codes,
 
           },
           error=function(cond) {
-            if(verbose) message(paste0("Serie ", .code, " could not be retrieved."))
-            if(verbose) message("Error: ", cond)
+            message(paste0("Serie ", .code, " could not be retrieved."))
+            message("Error: ", cond)
             next
           },
           final={})
